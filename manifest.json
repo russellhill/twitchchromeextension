@@ -16,7 +16,8 @@
     },
     "permissions": [
         "https://twitchcount.herokuapp.com/",
-        "https://static-cdn.jtvnw.net/"
+        "https://static-cdn.jtvnw.net/",
+        "alarms"
     ],
     "manifest_version": 2
   }
