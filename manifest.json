@@ -3,7 +3,9 @@
     "version": "1.0",
     "description": "Keep an eye on your favourite Twitch game stream counts",
     "background": {
-        "scripts": ["background.js"],
+        "scripts": [
+            "background.js"
+        ],
         "persistent": false
     },
     "browser_action": {
@@ -12,7 +14,8 @@
           "24": "images/icon24.png",
           "32": "images/icon32.png"
         },
-        "default_title": "Twitch Count"
+        "default_title": "Twitch Count",
+        "default_popup": "popup.html"
     },
     "permissions": [
         "https://twitchcount.herokuapp.com/",

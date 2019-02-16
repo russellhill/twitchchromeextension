@@ -18,7 +18,6 @@ function getViewerCount(callback) {
 
 chrome.runtime.onInstalled.addListener(function() {
     function getExternalIcon(iconURL) {
-        console.log('get icon', iconURL);
         var canvas = document.createElement('canvas');
         var img = new Image();
         img.onload = function() {
@@ -26,24 +25,19 @@ chrome.runtime.onInstalled.addListener(function() {
             var context = canvas.getContext('2d');
             context.drawImage(this, 0, 0);
             var imageData = context.getImageData(0, 0, img.width, img.height);
-            console.log('get icon (2)', imageData);
             chrome.browserAction.setIcon({imageData: imageData});
         }
         img.src = iconURL;
     }
 
     getViewerCount(function (error, data) {
-        console.log(data);
         chrome.browserAction.setBadgeText({ text: data.viewers.toString(10) });
         chrome.browserAction.setTitle({ title: 'Viewers: ' + data.viewers })
+
         getExternalIcon(data.box.small);
+
         chrome.alarms.create('checkAlarm', { delayInMinutes: 1, periodInMinutes: 1 });
     });    
-
-    chrome.browserAction.onClicked.addListener(function (tab) {
-        var newURL = 'https://www.twitch.tv/directory/game/Sea%20of%20Thieves';
-        chrome.tabs.create({ url: newURL });
-    });
 });
 
 // chrome.runtime.onSuspend.addListener(function() {
@@ -57,4 +51,22 @@ chrome.alarms.onAlarm.addListener(function(alarm) {
         chrome.browserAction.setBadgeText({ text: data.viewers.toString(10) });
         chrome.browserAction.setTitle({ title: 'Viewers: ' + data.viewers })
     });    
+});
+
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+    if ((request.from === 'popup') && (request.subject === 'GameInfo')) {
+        getViewerCount(function (error, data) {
+            chrome.browserAction.setBadgeText({ text: data.viewers.toString(10) });
+            chrome.browserAction.setTitle({ title: 'Viewers: ' + data.viewers })
+
+            var gameInfo = {};
+            gameInfo.gameTitle = data.name;
+            gameInfo.gameViewers = data.viewers;
+            gameInfo.gameChannels = data.channels;
+            gameInfo.gameLink = 'https://www.twitch.tv/directory/game/Sea%20of%20Thieves';
+            gameInfo.gameImage = data.box.medium;
+            sendResponse(gameInfo);
+        });    
+    }
+    return true;
 });

@@ -1,0 +1,32 @@
+#mainPopup {
+    padding: 10px;
+    height: 300px;
+    width: 200px;
+    font-family: Helvetica, Ubuntu, Arial, sans-serif;
+    text-align: center;
+    display: block;
+    position: relative;
+}
+
+#busy {
+    display: none;
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+    width: 100%;
+    font-size: 1em;
+}
+   
+h1 {
+    font-size: 2em;
+}
+
+h2 {
+    font-size: 1.5em;
+}
+
+h3 {
+    font-size: 1.2em;
+}
