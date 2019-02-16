@@ -2,18 +2,20 @@ function getViewerCount(callback) {
     var oldColor;
     chrome.browserAction.getBadgeBackgroundColor({}, function(color) {
         oldColor = color;
-    });
-    chrome.browserAction.setBadgeBackgroundColor({ color: '#FF0000'});
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', 'https://twitchcount.herokuapp.com/get-data?game=sea%20of%20thieves', true);
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4) {
-            var resp = JSON.parse(xhr.responseText);
-            chrome.browserAction.setBadgeBackgroundColor({ color: oldColor });
-            callback(null, resp);
+
+        chrome.browserAction.setBadgeBackgroundColor({ color: '#FF0000'});
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'https://twitchcount.herokuapp.com/get-data?game=sea%20of%20thieves', true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+                var resp = JSON.parse(xhr.responseText);
+                chrome.browserAction.setBadgeBackgroundColor({ color: oldColor });
+                callback(null, resp);
+            }
         }
-    }
-    xhr.send();
+        xhr.send();
+    });
 }
 
 chrome.runtime.onInstalled.addListener(function() {
