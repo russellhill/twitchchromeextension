@@ -9,7 +9,12 @@ function getViewerCount(callback) {
         xhr.open('GET', 'https://twitchcount.herokuapp.com/get-data?game=sea%20of%20thieves', true);
         xhr.onreadystatechange = function() {
             if (xhr.readyState === 4) {
-                var resp = JSON.parse(xhr.responseText);
+                var resp = null;
+                try {
+                    resp = JSON.parse(xhr.responseText);
+                } catch (e) {
+                    console.log('Error decoding JSON');
+                }
                 chrome.browserAction.setBadgeBackgroundColor({ color: oldColor });
                 callback(null, resp);
             }
@@ -33,11 +38,12 @@ chrome.runtime.onInstalled.addListener(function() {
     }
 
     getViewerCount(function (error, data) {
-        chrome.browserAction.setBadgeText({ text: data.viewers.toString(10) });
-        chrome.browserAction.setTitle({ title: 'Viewers: ' + data.viewers })
+        if (data) {
+            chrome.browserAction.setBadgeText({ text: data.viewers.toString(10) });
+            chrome.browserAction.setTitle({ title: 'Viewers: ' + data.viewers })
 
-        getExternalIcon(data.box.small);
-
+            getExternalIcon(data.box.small);
+        }
         chrome.alarms.create('checkAlarm', { delayInMinutes: 1, periodInMinutes: 1 });
     });    
 });
@@ -58,15 +64,18 @@ chrome.alarms.onAlarm.addListener(function(alarm) {
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if ((request.from === 'popup') && (request.subject === 'GameInfo')) {
         getViewerCount(function (error, data) {
-            chrome.browserAction.setBadgeText({ text: data.viewers.toString(10) });
-            chrome.browserAction.setTitle({ title: 'Viewers: ' + data.viewers })
-
             var gameInfo = {};
-            gameInfo.gameTitle = data.name;
-            gameInfo.gameViewers = data.viewers;
-            gameInfo.gameChannels = data.channels;
-            gameInfo.gameLink = 'https://www.twitch.tv/directory/game/Sea%20of%20Thieves';
-            gameInfo.gameImage = data.box.medium;
+
+            if (data) {
+                chrome.browserAction.setBadgeText({ text: data.viewers.toString(10) });
+                chrome.browserAction.setTitle({ title: 'Viewers: ' + data.viewers })
+
+                gameInfo.gameTitle = data.name;
+                gameInfo.gameViewers = data.viewers;
+                gameInfo.gameChannels = data.channels;
+                gameInfo.gameLink = 'https://www.twitch.tv/directory/game/Sea%20of%20Thieves';
+                gameInfo.gameImage = data.box.medium;
+            }
             sendResponse(gameInfo);
         });    
     }
