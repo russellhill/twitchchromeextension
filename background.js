@@ -56,8 +56,10 @@ chrome.runtime.onInstalled.addListener(function() {
 chrome.alarms.onAlarm.addListener(function(alarm) {
     getViewerCount(function (error, data) {
         console.log(data);
-        chrome.browserAction.setBadgeText({ text: data.viewers.toString(10) });
-        chrome.browserAction.setTitle({ title: 'Viewers: ' + data.viewers })
+        if (data) {
+            chrome.browserAction.setBadgeText({ text: data.viewers.toString(10) });
+            chrome.browserAction.setTitle({ title: 'Viewers: ' + data.viewers })
+        }
     });    
 });
 
